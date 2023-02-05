@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -10,14 +9,25 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int totalSecond = 1500;
+  static const twentyFiveMinutes = 1500;
+  int totalSecond = twentyFiveMinutes;
   bool isRun = false;
   late Timer timer;
+  int totalCnt = 0;
 
   void onTick(Timer timer) {
-    setState(() {
-      totalSecond--;
-    });
+    if (totalSecond == 0) {
+      setState(() {
+        totalCnt = totalCnt + 1;
+        isRun = false;
+        totalSecond = twentyFiveMinutes;
+      });
+      timer.cancel();
+    } else {
+      setState(() {
+        totalSecond--;
+      });
+    }
   }
 
   void onPausePressed() {
@@ -27,11 +37,26 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void onResetPressed() {
+    timer.cancel();
+    setState(() {
+      totalSecond = twentyFiveMinutes;
+      if (isRun) {
+        isRun = false;
+      }
+    });
+  }
+
   void onStartPressed() {
     timer = Timer.periodic(const Duration(seconds: 1), onTick);
     setState(() {
       isRun = true;
     });
+  }
+
+  String format(int seconds) {
+    var duration = Duration(seconds: seconds);
+    return duration.toString().split(".").first.substring(2, 7);
   }
 
   @override
@@ -45,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Container(
               alignment: Alignment.center,
               child: Text(
-                '$totalSecond',
+                format(totalSecond),
                 style: TextStyle(
                   color: Theme.of(context).cardColor,
                   fontSize: 89,
@@ -64,6 +89,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: Icon(isRun
                     ? Icons.pause_circle_outlined
                     : Icons.play_circle_outline),
+              ),
+            ),
+          ),
+          Flexible(
+            flex: 1,
+            child: Center(
+              child: IconButton(
+                iconSize: 50,
+                color: Theme.of(context).cardColor,
+                onPressed: onResetPressed,
+                icon: const Icon(Icons.restart_alt_outlined),
               ),
             ),
           ),
@@ -92,7 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         Text(
-                          '0',
+                          '$totalCnt',
                           style: TextStyle(
                             fontSize: 57,
                             color: Theme.of(context).textTheme.headline1?.color,
