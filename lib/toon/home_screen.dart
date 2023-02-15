@@ -28,11 +28,18 @@ class HomeScreen extends StatelessWidget {
         future: arr,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            //map 같이 여러 데이터 매핑시킬떄!
-            //어차피 데이터 있을때만 실행되므로 !를 붙여서 null이 절대 아니라고 말해주기
-            //listView는 자동으로 scroll도 만들어줌~
-            return ListView(
-              children: [for (var el in snapshot.data!) Text(el.title)],
+            //ListView보다 더 최적화된 기능이 많음
+            // -스크롤 방향 설정 가능
+            // -보여줄 아이템 갯수 설정 가능
+            // 데이터를 한번에 다 가져와서 보여주는게 아니라 필요한 만큼 itemBuilder로 만들어 씀
+            //즉, 한번에 로딩 X -> 필요할때 아이템 빌드해서 보여줌
+            return ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                var el = snapshot.data![index];
+                return Text(el.title);
+              },
             );
           }
           return const Center(child: CircularProgressIndicator());
