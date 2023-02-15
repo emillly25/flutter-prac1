@@ -33,12 +33,16 @@ class HomeScreen extends StatelessWidget {
             // -보여줄 아이템 갯수 설정 가능
             // 데이터를 한번에 다 가져와서 보여주는게 아니라 필요한 만큼 itemBuilder로 만들어 씀
             //즉, 한번에 로딩 X -> 필요할때 아이템 빌드해서 보여줌
-            return ListView.builder(
+            return ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 var el = snapshot.data![index];
                 return Text(el.title);
+              },
+              //리스트 아이템 사이에 구분자를 넣을수도 있음..ㄷㄷ
+              separatorBuilder: (context, index) {
+                return const SizedBox(width: 10);
               },
             );
           }
